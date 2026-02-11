@@ -1,5 +1,6 @@
 
 import Head from 'next/head'
+import Link from 'next/link'
 import styles from '@/styles/Home.module.css'
 import { portfolio } from '@/data/portfolio'
 
@@ -9,45 +10,39 @@ export default function About() {
             <Head>
                 <title>About | {portfolio.personal.name}</title>
             </Head>
-            <div className={styles.section}>
-                <h1 className={styles.title}>About Me</h1>
+            <main className="container">
 
-                <div className={styles.bio}>
-                    <p>{portfolio.personal.bio}</p>
-                </div>
-
-                <h2 className={styles.sectionTitle} style={{ marginTop: '4rem' }}>Technical Skills</h2>
-                <div className={styles.focusCard}>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                        {portfolio.personal.skills.map(skill => (
-                            <span key={skill} style={{
-                                padding: '0.5rem 1rem',
-                                background: 'rgba(255,255,255,0.1)',
-                                borderRadius: '4px',
-                                fontSize: '0.9rem'
-                            }}>
-                                {skill}
-                            </span>
-                        ))}
+                <header className={styles.header}>
+                    <div className={styles.info}>
+                        <h1>About</h1>
+                        <Link href="/"> &larr; Back to Home</Link>
                     </div>
-                </div>
+                </header>
 
-                <h2 className={styles.sectionTitle} style={{ marginTop: '4rem' }}>Education</h2>
-                <div className={styles.grid}>
-                    {portfolio.education.map((edu, i) => (
-                        <div key={i} className={styles.focusCard}>
-                            <h3>{edu.school}</h3>
-                            <p><strong>{edu.degree}</strong></p>
-                            <p style={{ opacity: 0.7 }}>{edu.date} | {edu.location}</p>
-                            {edu.coursework && (
-                                <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
-                                    Relevant Coursework: {edu.coursework.join(', ')}
-                                </p>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </div>
+                <section className={styles.section}>
+                    <p className={styles.bio}>
+                        {portfolio.personal.bio}
+                    </p>
+                </section>
+
+                <section className={styles.section}>
+                    <h2>Technical Skills</h2>
+                    <p>{portfolio.personal.skills.join(', ')}</p>
+                </section>
+
+                <section className={styles.section}>
+                    <h2>Education</h2>
+                    <ul className={styles.list}>
+                        {portfolio.education.map((edu, i) => (
+                            <li key={i}>
+                                <strong>{edu.school}</strong>, {edu.location}<br />
+                                {edu.degree} ({edu.date})
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+
+            </main>
         </>
     )
 }

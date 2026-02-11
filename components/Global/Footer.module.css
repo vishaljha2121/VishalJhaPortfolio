@@ -1,37 +1,38 @@
 .footer {
-    padding: 4rem 0;
-    border-top: 1px solid var(--glass-border);
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
     margin-top: 4rem;
-    opacity: 0.8;
-    background: var(--background);
+    color: #aeaeae;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: var(--max-width);
     margin: 0 auto;
-    padding: 0 2rem;
-    text-align: center;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 .links {
     display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    gap: 1.5rem;
 }
 
 .links a {
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    font-size: 1.1rem;
+    color: #666;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s;
 }
 
 .links a:hover {
-    opacity: 1;
-    color: var(--primary);
+    color: #000;
+    text-decoration: underline;
 }
 
 .copyright {
-    font-size: 0.9rem;
-    opacity: 0.5;
+    font-size: 0.8rem;
+    color: #999;
 }
