@@ -1,0 +1,40 @@
+.highlights {
+    background: var(--glass, rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 3rem 0;
+    margin: 4rem 0;
+}
+
+.highlightGrid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 0 2rem;
+}
+
+.highlightItem {
+    text-align: center;
+}
+
+.number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary);
+    /* Fallback */
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.label {
+    font-size: 1.1rem;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+}

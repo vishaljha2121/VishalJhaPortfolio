@@ -1,0 +1,73 @@
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+    border-left: 1px solid var(--glass-border);
+    margin-left: 1rem;
+}
+
+.item {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.item:last-child {
+    margin-bottom: 0;
+}
+
+.marker {
+    position: absolute;
+    left: -2.4rem;
+    /* Adjusted for alignment */
+    top: 0.35rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--background);
+}
+
+.date {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    margin-bottom: 0.25rem;
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.role {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+}
+
+.description {
+    list-style: none;
+    padding-left: 0;
+    opacity: 0.8;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.description li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.2rem;
+}
+
+.description li::before {
+    content: "▹";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    opacity: 0.7;
+}
+
+.techStack {
+    margin-top: 0.8rem;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    font-family: monospace;
+    color: var(--accent);
+}
