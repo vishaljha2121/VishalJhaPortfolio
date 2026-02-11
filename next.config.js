@@ -6,6 +6,8 @@ const nextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
+  basePath: process.env.NODE_ENV === 'production' ? '/VishalJhaPortfolio' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/VishalJhaPortfolio/' : '',
 }
 
 module.exports = nextConfig

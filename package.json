@@ -9,7 +9,7 @@
         "lint": "next lint",
         "export": "next export",
         "predeploy": "npm run build && npm run export",
-        "deploy": "gh-pages -d out -t"
+        "deploy": "cd out && git init && git checkout -b gh-pages && git add -A && git -c user.name='Deploy Bot' -c user.email='deploy@bot.com' commit -m 'Deploy' && git push -f https://github.com/vishaljha2121/VishalJhaPortfolio.git gh-pages"
     },
     "dependencies": {
         "next": "12.3.4",
