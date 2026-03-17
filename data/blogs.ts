@@ -397,7 +397,7 @@ sequenceDiagram
         githubUrl: 'https://github.com/vishaljha2121/TradingEngine',
         content: `
             <p>
-                Building an exchange matching engine is only half the battle; ensuring it behaves correctly under extreme stress and recovers deterministically from failure is what separates a toy project from a production system. In our latest sprint on the <strong>TrueMarkets Trading Engine</strong>, we set out to harden the core infrastructure through Event Sourcing and push it to its limits with industry-standard performance profiling and kernel bypass techniques.
+                Building an exchange matching engine is only half the battle; ensuring it behaves correctly under extreme stress and recovers deterministically from failure is what separates a toy project from a production system. In our latest sprint on the <strong>Trading Engine</strong>, we set out to harden the core infrastructure through Event Sourcing and push it to its limits with industry-standard performance profiling and kernel bypass techniques.
             </p>
 
             <p>
