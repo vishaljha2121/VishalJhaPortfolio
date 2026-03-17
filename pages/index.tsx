@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import styles from '@/styles/Home.module.css'
 import { portfolio } from '@/data/portfolio'
+import { blogPosts } from '@/data/blogs'
 
 export default function Home() {
     // Use first 3 projects
@@ -20,8 +21,11 @@ export default function Home() {
                 {/* Header: Photo + Info */}
                 <header className={styles.header}>
                     <div className={styles.photo}>
-                        {/* Placeholder for user photo - using a generic gray 400x400 box or similar if no image */}
-                        <div style={{ width: '200px', height: '200px', background: '#e0e0e0', borderRadius: '4px' }}></div>
+                        {portfolio.personal.photo ? (
+                            <img src={portfolio.personal.photo} alt={portfolio.personal.name} style={{ width: '200px', height: '200px', borderRadius: '4px', objectFit: 'cover' }} />
+                        ) : (
+                            <div style={{ width: '200px', height: '200px', background: '#e0e0e0', borderRadius: '4px' }}></div>
+                        )}
                     </div>
                     <div className={styles.info}>
                         <h1>{portfolio.personal.name}</h1>
@@ -38,7 +42,7 @@ export default function Home() {
                         {portfolio.personal.bio}
                     </p>
                     <p>
-                        Before this, I completed my Bachelors at SRM Institute of Science and Technology.
+                        Always keen to explore the overlap of quantitative modeling and robust engineering, I aim to contribute to fintech and trading teams solving real-world latency and scale problems.
                     </p>
                 </section>
 
@@ -55,14 +59,37 @@ export default function Home() {
                     </ul>
                 </section>
 
+                {/* Blog Highlights */}
+                <section className={styles.section}>
+                    <h2>Selected Writing</h2>
+                    <div className="blog-card-grid">
+                        {blogPosts.slice(0, 2).map((post) => (
+                            <Link href={`/blog/${post.slug}`} key={post.slug}>
+                                <a className="blog-card">
+                                    <time className="text-secondary" style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{post.date}</time>
+                                    <h3>{post.title}</h3>
+                                    <p>{post.description}</p>
+                                </a>
+                            </Link>
+                        ))}
+                    </div>
+                    <div style={{ marginTop: '1.5rem' }}>
+                        <Link href="/blog">View all writing &rarr;</Link>
+                    </div>
+                </section>
+
                 {/* Experience - Simple List */}
                 <section className={styles.section}>
                     <h2>Experience</h2>
                     <ul className={styles.list}>
                         {portfolio.experience.map((exp, i) => (
                             <li key={i}>
-                                <strong>{exp.role}</strong> at <strong>{exp.company}</strong> ({exp.date})<br />
-                                <span className={styles.subtext}>{exp.description[0]}</span>
+                                <strong>{exp.role}</strong> at <strong>{exp.company}</strong> ({exp.date})
+                                <ul style={{ listStyleType: 'disc', paddingLeft: '1.2rem', marginTop: '0.25rem', marginBottom: '0' }}>
+                                    {exp.description.map((desc, j) => (
+                                        <li key={j} className={styles.subtext} style={{ marginBottom: '0.25rem' }}>{desc}</li>
+                                    ))}
+                                </ul>
                             </li>
                         ))}
                     </ul>
@@ -84,22 +111,24 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* Publications (Placeholder derived from resume) */}
+                {/* Publications */}
                 <section className={styles.section}>
                     <h2>Publications</h2>
                     <ul className={styles.list}>
-                        <li>
-                            <strong>Multi-model ensemble and architecture comparison</strong>. IJSR, Jan 2022.<br />
-                            <span className={styles.subtext}>Compared CNN, ANN, DNN on multiple datasets for accuracy and generalization with fixed hyperparameters.</span>
-                        </li>
-                        <li>
-                            <strong>Crypto sentiment: Social media impact on coin markets</strong>. IJAR, Jun 2023.<br />
-                            <span className={styles.subtext}>Analyzed Twitter sentiment to track crypto trends and LTP patterns for risk-aware portfolio allocation.</span>
-                        </li>
+                        {portfolio.publications.map((pub, i) => (
+                            <li key={i}>
+                                {pub.link ? (
+                                    <a href={pub.link} target="_blank" rel="noopener noreferrer"><strong>{pub.title}</strong></a>
+                                ) : (
+                                    <strong>{pub.title}</strong>
+                                )}. {pub.venue}, {pub.date}.<br />
+                                <span className={styles.subtext}>{pub.description}</span>
+                            </li>
+                        ))}
                     </ul>
                 </section>
 
-                {/* Teaching/Other (Placeholder) */}
+                {/* Teaching/Other (Placeholder)
                 <section className={styles.section}>
                     <h2>Teaching</h2>
                     <p><em>(Placeholder for Teaching Assistant roles)</em></p>
@@ -110,7 +139,7 @@ export default function Home() {
                     <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
                         Last updated: {new Date().toLocaleDateString()}
                     </p>
-                </footer>
+                </footer> */}
 
             </main>
         </>

@@ -26,15 +26,39 @@ export interface Education {
     coursework?: string[]
 }
 
+
+export interface Personal {
+    name: string
+    role: string
+    email: string
+    location: string
+    phone: string
+    linkedin: string
+    github: string
+    photo?: string
+    bio: string
+    skills: string[]
+}
+
+export interface Publication {
+    title: string
+    venue: string
+    date: string
+    description: string
+    link?: string
+}
+
 export const portfolio = {
     personal: {
         name: "Vishal Jha",
-        role: "MSCS @ NYU | Quantitative Developer",
+        role: "MSCS @ NYU | Developer",
         email: "vj2307@nyu.edu",
         location: "New York, USA",
-        phone: "+1 801-792-8116",
+        phone: "+1 (801) 792-8116",
         linkedin: "https://www.linkedin.com/in/vishal-jha21/",
         github: "https://github.com/vishaljha2121",
+        // Add your photo here. Place the file in the public/ folder (e.g. public/me.jpg) and reference it here as "/me.jpg"
+        photo: "ME.JPG",
         bio: "Graduate student in Computer Science at NYU Tandon, specializing in high-performance systems and machine learning infrastructure. Experienced in building scalable financial technology and low-latency trading engines. Passionate about distributed systems, market microstructure, and probabilistic algorithms.",
         skills: [
             "C++", "Python", "Java", "VHDL/Verilog", "SQL",
@@ -42,7 +66,7 @@ export const portfolio = {
             "AWS", "Linux", "Distributed Systems", "Low-latency Computing",
             "Risk Modeling", "Market Microstructure", "Machine Learning"
         ]
-    },
+    } as Personal,
 
     experience: [
         {
@@ -115,7 +139,7 @@ export const portfolio = {
         },
         {
             school: "SRM Institute of Science and Technology",
-            degree: "Bachelors of Technology | CSE with spl. AIML",
+            degree: "Bachelors of Technology | CSE with specialisation in AIML",
             date: "Jun 2023",
             location: "Chennai, India"
         }
@@ -126,13 +150,15 @@ export const portfolio = {
             title: "Multi-model ensemble and architecture comparison",
             venue: "IJSR",
             date: "Jan 2022",
-            description: "Compared CNN, ANN, DNN on multiple datasets for accuracy and generalization with fixed hyperparameters."
+            description: "Compared CNN, ANN, DNN on multiple datasets for accuracy and generalization with fixed hyperparameters.",
+            link: "https://www.ijsr.in/upload/1368857845Chapter_15.pdf"
         },
         {
             title: "Crypto sentiment: Social media impact on coin markets",
             venue: "IJAR",
             date: "Jun 2023",
-            description: "Analyzed Twitter sentiment to track crypto trends and LTP patterns for risk-aware portfolio allocation."
+            description: "Analyzed Twitter sentiment to track crypto trends and LTP patterns for risk-aware portfolio allocation.",
+            link: "https://www.journalijar.com/article/44908/live-crypto-sentiment:-social-media-influence-on-multi-sectoral-coin-and-its-impact-on-portfolio-risk-management,-using-data-analytics/" // Update this link
         }
     ]
 }

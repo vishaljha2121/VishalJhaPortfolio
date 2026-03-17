@@ -1,4 +1,68 @@
 .nav {
-    display: none;
-    /* Hidden for Strict Academic Layout */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(245, 244, 240, 0.85);
+    /* F5F4F0 matching the gradient top */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: none !important;
+    letter-spacing: -0.02em;
+}
+
+.logo:hover {
+    opacity: 0.8;
+}
+
+.links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.links li {
+    margin: 0;
+}
+
+.links a {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: var(--secondary);
+    text-decoration: none;
+    border-bottom: none !important;
+    transition: color 0.15s ease;
+}
+
+.links a:hover,
+.links a.active {
+    color: var(--primary);
+}
+
+@media (max-width: 768px) {
+    .links {
+        display: none;
+        /* Keep it exceedingly clean on mobile to match the strict aesthetic, or could add a hamburger */
+    }
 }
