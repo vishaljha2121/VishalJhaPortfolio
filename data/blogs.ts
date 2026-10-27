@@ -214,7 +214,34 @@ flowchart LR
 
 <h2 style="margin-top: 3rem">7. 16 out of 16, to the atom</h2>
 
-<p>Fills come from the finalized chain, never the exchange's report. So the books and the chain hold the same integers:</p>
+<p>Every amount in Velocita is an integer count of an asset's smallest unit, called an <strong>atom</strong>:</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.5rem 0 2rem;">
+    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondary);">SOL · base</div><div style="font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.2; margin-top: 0.3rem;">1 SOL = 1,000,000,000 lamports</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.3rem;"><code>BaseAtoms</code></div></div>
+    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondary);">USDC · quote</div><div style="font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.2; margin-top: 0.3rem;">1 USDC = 1,000,000 micros</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.3rem;"><code>QuoteAtoms</code></div></div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 0 0 2rem;">
+    <div style="border-left: 3px solid #22c55e; padding: 0.5rem 1rem;"><strong>Same bits everywhere</strong><div style="color: var(--secondary); font-size: 0.95rem;">Floats round differently on Intel and ARM; integers can't fork the replicas.</div></div>
+    <div style="border-left: 3px solid #22c55e; padding: 0.5rem 1rem;"><strong>Equal to the chain</strong><div style="color: var(--secondary); font-size: 0.95rem;">Solana stores balances in these units, so a settlement compares with <code>==</code>, no tolerance.</div></div>
+    <div style="border-left: 3px solid #22c55e; padding: 0.5rem 1rem;"><strong>Can't be mixed up</strong><div style="color: var(--secondary); font-size: 0.95rem;">Two distinct types: adding lamports to USDC doesn't compile.</div></div>
+</div>
+
+<pre style="background: #ffffff; color: var(--foreground); border: 1px solid var(--border); padding: 1.25rem 1.5rem; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 0.9rem; margin-bottom: 2rem">using BaseAtoms  = StrongId&lt;BaseAtomTag&gt;;    // lamports
+using QuoteAtoms = StrongId&lt;QuoteAtomTag&gt;;   // USDC micros</pre>
+
+<p>One buy, followed through the system in atoms:</p>
+
+<div class="mermaid" style="display: flex; justify-content: center; margin-bottom: 2rem; background: transparent;">
+flowchart LR
+  D["strategy<br/>debit 12,690,000<br/>min 110,400,000 lamports"] --> K["kernel<br/>reserves 12,690,000"]
+  K --> S["signer<br/>fee = 12,690,000 ÷ 10,000 × 20<br/>= 25,380 exactly"]
+  S --> C["Solana<br/>+119,507,269 lamports<br/>−12,690,000 micros"]
+  C --> T["settlement<br/>same integers"]
+  T --> UI["dashboard<br/>$ only for display"]
+</div>
+
+<p>That division is why every buy is a whole number of cents: the signer refuses an input that isn't a multiple of 10,000 atoms, so the fee always comes out exact. And the books and the chain end up holding the same integers:</p>
 
 <table style="width: 100%; text-align: left; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem;">
     <thead>
