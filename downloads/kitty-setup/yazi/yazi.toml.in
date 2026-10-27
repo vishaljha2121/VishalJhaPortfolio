@@ -1,0 +1,26 @@
+[[plugin.prepend_previewers]]
+url = "*.md"
+run = 'piper -- CLICOLOR_FORCE=1 @GLOW@ -w=$w -s=dark "$1"'
+
+[[plugin.prepend_previewers]]
+url = "*.markdown"
+run = 'piper -- CLICOLOR_FORCE=1 @GLOW@ -w=$w -s=dark "$1"'
+
+[[plugin.prepend_previewers]]
+url = "*.mdx"
+run = 'piper -- CLICOLOR_FORCE=1 @GLOW@ -w=$w -s=dark "$1"'
+
+[opener]
+markdown = [
+	{ run = '@GLOW@ -p "$@"', block = true, desc = "Render (glow)" },
+]
+
+[[open.prepend_rules]]
+url = "*.md"
+use = "markdown"
+[[open.prepend_rules]]
+url = "*.markdown"
+use = "markdown"
+[[open.prepend_rules]]
+url = "*.mdx"
+use = "markdown"

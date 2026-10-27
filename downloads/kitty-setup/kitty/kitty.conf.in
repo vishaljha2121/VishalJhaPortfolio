@@ -1,0 +1,82 @@
+# Font
+font_family       MesloLGS NF
+bold_font         auto
+italic_font       auto
+bold_italic_font  auto
+font_size         14.0
+text_composition_strategy 1.7 30
+disable_ligatures never
+
+# Cursor (with animated trail)
+cursor_shape            beam
+cursor_blink_interval   0.5
+cursor_trail            1
+cursor_trail_decay      0.1 0.4
+
+# Scrollback
+scrollback_lines               50000
+scrollback_pager_history_size  100
+scrollback_fill_enlarged_window yes
+
+# Mouse
+mouse_hide_wait        3.0
+copy_on_select          yes
+strip_trailing_spaces  smart
+underline_hyperlinks   hover
+
+# Performance
+repaint_delay    8
+input_delay      2
+sync_to_monitor  yes
+
+# Bell
+enable_audio_bell      no
+visual_bell_duration   0.0
+window_alert_on_bell   yes
+
+# Window
+remember_window_size       yes
+initial_window_width        120c
+initial_window_height       34c
+window_padding_width       10
+confirm_os_window_close    0
+background_opacity         0.95
+dynamic_background_opacity yes
+background_blur            24
+hide_window_decorations    titlebar-only
+
+# Layouts: splits = manual panes; grid = auto tiling; stack = zoom one pane
+enabled_layouts splits,grid,stack,tall,fat
+window_border_width 1pt
+inactive_text_alpha 0.85
+
+# Tabs — always show the bar (perennial legend) + custom draw
+tab_bar_edge         top
+tab_bar_min_tabs     1
+tab_bar_style        custom
+tab_powerline_style  slanted
+tab_title_template   "{index}: {title}"
+
+# macOS
+macos_option_as_alt                left
+macos_quit_when_last_window_closed yes
+macos_titlebar_color               background
+macos_show_window_title_in         none
+macos_thicken_font                 0.25
+
+# Integration
+shell_integration    enabled
+allow_remote_control  yes
+listen_on            unix:/tmp/mykitty
+term                 xterm-kitty
+
+include ./theme.conf
+
+# Custom keymaps (kitty defaults already cover font size, opt+cmd+arrows pane nav,
+# tabs, scrollback, fullscreen, config reload).
+map cmd+d            launch --location=vsplit --cwd=current
+map cmd+shift+d      launch --location=hsplit --cwd=current
+map cmd+shift+m      kitten hints --type path --program "launch --type=overlay @GLOW@ -p"
+map cmd+b            launch --location=vsplit --cwd=current --bias=22 @YAZI@
+map cmd+g            goto_layout grid
+map cmd+shift+g      goto_layout splits

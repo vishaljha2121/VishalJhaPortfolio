@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520" role="img" aria-labelledby="title desc">
+<title id="title">How my Kitty terminal setup fits together</title>
+<desc id="desc">A configuration diagram, not a terminal screenshot. Kitty handles windows and drawing, Zsh handles shell behaviour, and separate applications handle files, navigation and diffs.</desc>
+<rect width="1000" height="520" rx="18" fill="#282c34"/>
+<g font-family="Arial, sans-serif">
+<text x="42" y="52" fill="#abb2bf" font-size="15" letter-spacing="2">MY TERMINAL · CONFIGURATION MAP</text>
+<text x="42" y="99" fill="#fff" font-size="31">One palette. Three layers.</text>
+<rect x="42" y="130" width="916" height="86" rx="9" fill="#21252b" stroke="#61afef"/>
+<text x="66" y="165" fill="#61afef" font-size="23" font-weight="bold">Kitty</text>
+<text x="235" y="163" fill="#abb2bf" font-size="19">MesloLGS NF · Atom One Dark · native splits</text>
+<text x="235" y="192" fill="#abb2bf" font-size="19">Custom top tabs · cursor trail · shell integration</text>
+<path d="M500 218v28" stroke="#5c6370" stroke-width="2"/>
+<rect x="42" y="248" width="916" height="78" rx="9" fill="#21252b" stroke="#c678dd"/>
+<text x="66" y="294" fill="#c678dd" font-size="23" font-weight="bold">Zsh</text>
+<text x="235" y="281" fill="#abb2bf" font-size="19">Aliases · fzf bindings · zoxide · SSH colour wrapper</text>
+<text x="235" y="309" fill="#abb2bf" font-size="17">No Powerlevel10k or Starship in this configuration</text>
+<path d="M500 328v28" stroke="#5c6370" stroke-width="2"/>
+<rect x="42" y="358" width="290" height="89" rx="9" fill="#21252b"/>
+<rect x="354" y="358" width="292" height="89" rx="9" fill="#21252b"/>
+<rect x="668" y="358" width="290" height="89" rx="9" fill="#21252b"/>
+<text x="64" y="391" fill="#98c379" font-size="19">READ</text>
+<text x="64" y="423" fill="#abb2bf" font-size="19">bat · Glow · Yazi + Piper</text>
+<text x="376" y="391" fill="#e5c07b" font-size="19">NAVIGATE</text>
+<text x="376" y="423" fill="#abb2bf" font-size="19">lsd · fzf · zoxide</text>
+<text x="690" y="391" fill="#56b6c2" font-size="19">INSPECT</text>
+<text x="690" y="423" fill="#abb2bf" font-size="19">delta · fastfetch</text>
+<text x="42" y="486" fill="#abb2bf" font-size="15">Diagram based on the inspected config. Each tool still has its own renderer and settings.</text>
+</g></svg>
