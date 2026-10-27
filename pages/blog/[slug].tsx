@@ -54,13 +54,13 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                                 <a className="text-secondary" style={{ fontSize: '0.9rem', borderBottom: 'none' }}>&larr; Writing</a>
                             </Link>
                         </div>
-                        <h1 style={{ fontSize: '3rem', marginBottom: '1rem', letterSpacing: '-0.02em', lineHeight: '1.1' }}>
+                        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', marginBottom: '1rem', letterSpacing: '-0.02em', lineHeight: '1.1' }}>
                             {post.title}
                         </h1>
-                        <div style={{ display: 'flex', gap: '1rem', color: 'var(--secondary)', fontSize: '0.95rem', fontFamily: 'var(--font-sans)', alignItems: 'center' }}>
-                            <time>{post.date}</time>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', color: 'var(--secondary)', fontSize: '0.95rem', fontFamily: 'var(--font-sans)', alignItems: 'center' }}>
+                            <time style={{ whiteSpace: 'nowrap' }}>{post.date}</time>
                             <span>&middot;</span>
-                            <span>Vishal Jha</span>
+                            <span style={{ whiteSpace: 'nowrap' }}>Vishal Jha</span>
                             {post.githubUrl && (
                                 <>
                                     <span>&middot;</span>

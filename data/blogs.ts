@@ -11,7 +11,7 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
     {
         slug: 'velocita-replicated-trading-on-a-raspberry-pi',
-        title: 'Velocita: A Replicated Trading System on a Raspberry Pi That Refused to Believe the Exchange',
+        title: 'Velocita: Building a Replicated Trading System on Home Hardware',
         date: '2026-10-27',
         description: 'Raft over Aeron on two NUCs and a Pi 5, 16 real swaps on Solana, a ledger that matched the chain to the billionth of a SOL, and every problem I had to solve to get there.',
         tags: ['Distributed Systems', 'Raft', 'C++20', 'Aeron', 'Solana', 'Trading', 'Architecture'],
@@ -22,30 +22,32 @@ export const blogPosts: BlogPost[] = [
 </p>
 
 <p>
-    It lost 95 cents. The most interesting thing it did all night was refuse to believe the exchange.
+    It lost 95 cents. It also stopped on an order whose outcome it could not verify. The run tested execution and accounting; it did not demonstrate a profitable strategy.
 </p>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin: 2.5rem 0;">
     <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1;">16 / 16</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">settlements equal to the chain</div></div>
     <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1;">126 ms</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">p50 commit across 3 machines</div></div>
-    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1;">2 s</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">decision to Solana block (p50)</div></div>
-    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1;">208 ns</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">kernel decision (p50)</div></div>
-    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1;">4–7 s</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">voter restarted, back in step</div></div>
+    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1;">2 s</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">intent to Solana block (p50)</div></div>
+    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1;">125 ns</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">reducer p50 · Apple M5 Pro microbenchmark</div></div>
+    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1;">4–7 s</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">graceful restart/rejoin · trading halted</div></div>
     <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; background: rgba(255,255,255,0.6);"><div style="font-family: var(--font-serif); font-size: 2rem; line-height: 1.1; color: #16a34a;">0</div><div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.4rem;">duplicate orders or unexplained balances</div></div>
 </div>
 
+<p style="font-size: 0.85rem; color: var(--secondary);">Measurements cover different scopes: 25 applied live intents for commit latency, 16 successful swaps for block inclusion, and an in-memory reducer benchmark on an Apple M5 Pro (125 ns p50, 167 ns p99; no Raft, WAL or network). The 4–7 s restart times came from a halted-cluster rolling upgrade. <a href="https://github.com/vishaljha2121/Velocita/tree/main/archive/evidence/benchmarks_2026-10-27">Benchmark records</a> · <a href="https://github.com/vishaljha2121/Velocita/blob/main/archive/evidence/automated_launch_2026-10-15/effect25-recovery/rolling/README.md">restart record</a>.</p>
+
 <h2 style="margin-top: 3rem">1. The problem</h2>
 
-<p>Real money breaks things a trading script never notices:</p>
+<p>An automated trading system has to handle failures beyond the signal itself:</p>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0 2rem;">
     <div style="border-left: 3px solid #ef4444; padding: 0.5rem 1rem;"><strong>Crashes mid-send</strong><div style="color: var(--secondary); font-size: 0.95rem;">Restart must neither lose the order nor send it twice.</div></div>
-    <div style="border-left: 3px solid #ef4444; padding: 0.5rem 1rem;"><strong>An exchange you can't fully trust</strong><div style="color: var(--secondary); font-size: 0.95rem;">"Failed" doesn't always mean "didn't happen".</div></div>
-    <div style="border-left: 3px solid #ef4444; padding: 0.5rem 1rem;"><strong>A strategy you shouldn't trust</strong><div style="color: var(--secondary); font-size: 0.95rem;">A signal bug must not be able to drain the account.</div></div>
+    <div style="border-left: 3px solid #ef4444; padding: 0.5rem 1rem;"><strong>Ambiguous venue responses</strong><div style="color: var(--secondary); font-size: 0.95rem;">"Failed" doesn't always mean "didn't happen".</div></div>
+    <div style="border-left: 3px solid #ef4444; padding: 0.5rem 1rem;"><strong>Limits outside the strategy</strong><div style="color: var(--secondary); font-size: 0.95rem;">The kernel must enforce spending and loss limits even if signal code is wrong.</div></div>
     <div style="border-left: 3px solid #ef4444; padding: 0.5rem 1rem;"><strong>Cheap hardware</strong><div style="color: var(--secondary); font-size: 0.95rem;">Two mini PCs and a Pi on home Wi-Fi.</div></div>
 </div>
 
-<p>These are the same failures that cost real trading firms money. I wanted to see if the textbook answers could hold all the way down to a $25 account on a Raspberry Pi.</p>
+<p>I wanted to test these failure boundaries with a real $25 account and hardware I could operate at home.</p>
 
 <h2 style="margin-top: 3rem">2. The idea: separate deciding from doing</h2>
 
@@ -76,7 +78,7 @@ flowchart LR
   GW -->|"finalized reads"| SOL
 </div>
 
-<p>One trade passes through five hands, and none can complete it alone:</p>
+<p>The strategy proposes; the kernel, gateway and signer each enforce a different part of the execution contract:</p>
 
 <div class="mermaid" style="display: flex; justify-content: center; margin-bottom: 2rem; background: transparent;">
 sequenceDiagram
@@ -84,14 +86,21 @@ sequenceDiagram
   participant R as Raft (3 voters)
   participant G as Gateway
   participant K as Signer
+  participant T as True Markets
   participant C as Solana
   S->>R: propose a buy
   R->>R: commit on 2 of 3, reserve cash
   G->>R: read the committed intent
+  G->>T: create unsigned swap
+  T-->>G: exact payload
+  G->>R: Prepare (payload digest)
   G->>K: sign this exact transaction
   K->>R: is this what was committed?
   K-->>G: signature
-  G->>C: execute, then read it back finalized
+  G->>R: Attempt
+  G->>T: execute
+  T->>C: submit transaction
+  G->>C: read finalized transaction
   G->>R: settlement with exact amounts
 </div>
 
@@ -106,23 +115,25 @@ sequenceDiagram
         <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0; vertical-align: top;"><strong>ADR 0005</strong> kernel behind Raft</td><td style="padding: 0.75rem 0; color: var(--secondary);">Same pure function + same log = same cents on every machine. No clocks, floats or heap.</td></tr>
         <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0; vertical-align: top;"><strong>ADR 0020</strong> callers have roles</td><td style="padding: 0.75rem 0; color: var(--secondary);">The strategy can ask, never authorize. Even the operator can't report a fill.</td></tr>
         <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0; vertical-align: top;"><strong>ADR 0021</strong> integer money</td><td style="padding: 0.75rem 0; color: var(--secondary);">Lamports and USDC micros. The $10 loss stop lives in replicated state.</td></tr>
-        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0; vertical-align: top;"><strong>ADR 0013</strong> journal first</td><td style="padding: 0.75rem 0; color: var(--secondary);">Write "about to send" before sending, so a crash means "maybe sent", never "send again".</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0; vertical-align: top;"><strong>Gateway journals</strong> before external acts</td><td style="padding: 0.75rem 0; color: var(--secondary);">Write "about to send" before sending, so a crash means "maybe sent", never "send again".</td></tr>
         <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0; vertical-align: top;"><strong>ADR 0019</strong> one key holder</td><td style="padding: 0.75rem 0; color: var(--secondary);">Only the signer holds the key, and it checks the exact transaction itself.</td></tr>
-        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0; vertical-align: top;"><strong>ADR 0025</strong> chain is the truth</td><td style="padding: 0.75rem 0; color: var(--secondary);">Money moves only on a finalized transaction matching what was signed.</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0; vertical-align: top;"><strong>ADR 0025</strong> chain is the truth</td><td style="padding: 0.75rem 0; color: var(--secondary);">The ledger books settlement only after finalized evidence matches the signed transaction.</td></tr>
     </tbody>
 </table>
 
 <h2 style="margin-top: 3rem">3. The SD card that couldn't keep up</h2>
 
 <div style="margin: 2rem 0;">
-    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Commit latency, p50</div>
+    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Commit latency, p50 · different hardware and workloads</div>
     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem;"><div style="width: 9rem; font-size: 0.85rem;">V1.1 · one Pi</div><div style="flex: 1; background: rgba(0,0,0,0.05); border-radius: 4px;"><div style="width: 100%; background: #ef4444; height: 22px; border-radius: 4px;"></div></div><div style="width: 4.5rem; font-size: 0.9rem; font-weight: 600;">396 ms</div></div>
     <div style="display: flex; align-items: center; gap: 0.75rem;"><div style="width: 9rem; font-size: 0.85rem;">V2 · live</div><div style="flex: 1; background: rgba(0,0,0,0.05); border-radius: 4px;"><div style="width: 32%; background: #22c55e; height: 22px; border-radius: 4px;"></div></div><div style="width: 4.5rem; font-size: 0.9rem; font-weight: 600;">126 ms</div></div>
 </div>
 
+<p>The chart compares V1.1 at 5 commands/s on one Pi with 25 sparse live intents across three machines. It shows the project’s history, not a controlled speedup from one code change.</p>
+
 <p>Three voters on one Pi did ~9 <code>fsync</code>s per command through one SD card, and the Raft thread waited on every one. At 20 commands/s the cluster lost its leader.</p>
 
-<p>The fix: the Raft thread never touches the disk. It hands 4 KiB blocks to a writer thread over a lock-free ring.</p>
+<p>The WAL change moved writes and syncs to a writer thread. The Raft thread hands it sealed 4 KiB blocks over a lock-free ring; it can still face backpressure when the arena fills.</p>
 
 <pre style="background: #ffffff; color: var(--foreground); border: 1px solid var(--border); padding: 1.25rem 1.5rem; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 0.9rem; margin-bottom: 2rem">bool push(const T&amp; value) noexcept {
     const auto head = head_.load(std::memory_order_relaxed);
@@ -134,15 +145,17 @@ sequenceDiagram
 }</pre>
 
 <div style="margin: 2rem 0;">
-    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Raft thread time per log record, median</div>
+    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">WAL owner-loop microbenchmark · Apple M5 Pro · median</div>
     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem;"><div style="width: 9rem; font-size: 0.85rem;">fsync on thread</div><div style="flex: 1; background: rgba(0,0,0,0.05); border-radius: 4px;"><div style="width: 100%; background: #ef4444; height: 22px; border-radius: 4px;"></div></div><div style="width: 4.5rem; font-size: 0.9rem; font-weight: 600;">20.6 µs</div></div>
     <div style="display: flex; align-items: center; gap: 0.75rem;"><div style="width: 9rem; font-size: 0.85rem;">writer thread</div><div style="flex: 1; background: rgba(0,0,0,0.05); border-radius: 4px;"><div style="width: 0.6%; min-width: 3px; background: #22c55e; height: 22px; border-radius: 4px;"></div></div><div style="width: 4.5rem; font-size: 0.9rem; font-weight: 600;">42 ns</div></div>
-    <div style="font-size: 0.85rem; color: #16a34a; margin-top: 0.5rem; font-weight: 600;">490× less</div>
+    <div style="font-size: 0.85rem; color: #16a34a; margin-top: 0.5rem; font-weight: 600;">490× lower median owner-loop time; not durable-commit latency</div>
 </div>
 
-<h3>…which broke Raft</h3>
+<p>The October 27 storage run measured 20.584 µs inline versus 0.042 µs off-thread. The off-thread time covers staging and submission, including arena backpressure, rather than waiting for the record to become durable. Its p99 was 160.166 µs versus 111.375 µs inline: the lower median did not remove tail latency. <a href="https://github.com/vishaljha2121/Velocita/blob/main/archive/evidence/benchmarks_2026-10-27/v2-storage-benchmark.txt">Raw measurements</a>.</p>
 
-<p>The Raft library counts the leader's own vote as soon as an entry is appended. With async writes, that vote arrived before the entry was on disk:</p>
+<h3>Why asynchronous storage needed a Raft change</h3>
+
+<p>The upstream library assumes synchronous persistence and counts the leader's own vote when an entry is appended. An asynchronous integration must change that assumption. This hypothetical failure shows why; it was not an observed loss in Velocita:</p>
 
 <div class="mermaid" style="display: flex; justify-content: center; margin-bottom: 2rem; background: transparent;">
 sequenceDiagram
@@ -152,7 +165,7 @@ sequenceDiagram
   L->>F1: entry 42 (leader's copy only in memory)
   F1-->>L: durable
   Note over L: majority, commit 42
-  Note over L: crash, restart without 42
+  Note over L: crash; unsafe integration restarts without 42
   Note over F1: briefly unreachable
   L->>F2: elect a leader: neither has 42
   Note over L,F2: committed entry 42 is gone
@@ -163,9 +176,11 @@ sequenceDiagram
     <div>A pinned fork adds a <code>durable_idx</code> hook: the leader's vote counts only up to what is really on disk. The build refuses to compile without the patch.</div>
 </div>
 
-<h2 style="margin-top: 3rem">4. Memory that never grows</h2>
+<p>This example assumes the restarted node is allowed to serve despite losing its volatile suffix. Current Velocita separately refuses recovery when a persisted commit index exceeds the recovered log. The durable-quorum patch prevents the unsafe acknowledgement in the first place.</p>
 
-<p>Nothing on the Raft path asks the OS for memory after start-up. Every object has a size fixed at compile time, and "full" is a typed refusal, never a slowdown or an out-of-memory kill.</p>
+<h2 style="margin-top: 3rem">4. Fixed budgets for kernel state</h2>
+
+<p>The deterministic reducer uses fixed-size tables, and the retained log and WAL use startup-allocated arenas. Full tables refuse admission; a full WAL arena creates backpressure. The surrounding node still allocates for proposal payloads, peer messages and persistence jobs, so the whole Raft path is not allocation-free.</p>
 
 <div style="margin: 2rem 0;">
     <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.6rem;">Size budgets, enforced by <code>static_assert</code>: green under 90%, amber 90–99%, dark exactly at budget (deliberate: one cache line, the swap account sized to fit)</div>
@@ -227,7 +242,7 @@ static_assert(sizeof(Command) &lt;= 512);</pre>
 
 <h2 style="margin-top: 3rem">6. The gateway that stopped itself, twice</h2>
 
-<p>The gateway stops when anything looks off, because a stop might hide an order in flight. That paranoia surfaced two bugs:</p>
+<p>The gateway stops when it cannot safely account for an operation. Two bugs showed where that behavior was too broad:</p>
 
 <table style="width: 100%; text-align: left; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem;">
     <thead>
@@ -239,7 +254,7 @@ static_assert(sizeof(Command) &lt;= 512);</pre>
     </tbody>
 </table>
 
-<h2 style="margin-top: 3rem">7. One process holds the key, and trusts no one</h2>
+<h2 style="margin-top: 3rem">7. A separate signer checks the transaction</h2>
 
 <p>The gateway talks to the internet, so it never sees the key. The signer re-checks everything itself before signing:</p>
 
@@ -273,7 +288,7 @@ flowchart LR
     </tbody>
 </table>
 
-<p>Every message is tagged with a key derived per direction and per cluster, so a captured frame can't be replayed backwards or into another cluster. Secrets live only in RAM: a stolen SD card holds none.</p>
+<p>Every message is tagged with a key derived per direction and per cluster, so a captured frame can't be replayed backwards or into another cluster. Deployed service credentials are placed in tmpfs, rather than the voter’s SD-card data directory. The owner’s Keychain and downloaded API-key file are separate custody responsibilities.</p>
 
 <div style="border-left: 3px solid var(--foreground); padding: 0.75rem 1.25rem; margin: 2rem 0; background: rgba(0,0,0,0.03);">
     <div style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondary); margin-bottom: 0.25rem;">ADR 0019 · decode, don't simulate</div>
@@ -290,7 +305,7 @@ flowchart LR
 </div>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 0 0 2rem;">
-    <div style="border-left: 3px solid #22c55e; padding: 0.5rem 1rem;"><strong>Same bits everywhere</strong><div style="color: var(--secondary); font-size: 0.95rem;">Floats round differently on Intel and ARM; integers can't fork the replicas.</div></div>
+    <div style="border-left: 3px solid #22c55e; padding: 0.5rem 1rem;"><strong>Same bits everywhere</strong><div style="color: var(--secondary); font-size: 0.95rem;">Integer atoms with explicit overflow and rounding rules avoid floating-point variation in accounting across CPUs.</div></div>
     <div style="border-left: 3px solid #22c55e; padding: 0.5rem 1rem;"><strong>Equal to the chain</strong><div style="color: var(--secondary); font-size: 0.95rem;">Solana stores balances in these units, so a settlement compares with <code>==</code>, no tolerance.</div></div>
     <div style="border-left: 3px solid #22c55e; padding: 0.5rem 1rem;"><strong>Can't be mixed up</strong><div style="color: var(--secondary); font-size: 0.95rem;">Two distinct types: adding lamports to USDC doesn't compile.</div></div>
 </div>
@@ -329,30 +344,30 @@ sequenceDiagram
   participant T as Exchange
   participant C as Solana
   G->>T: execute buy (effect 25)
-  T->>C: submit
-  Note over C: lands in slot 457,481,187 and fails
   T-->>G: failed, executed 0, NO transaction hash
-  Note over G: nothing to verify, so hold the $12.69
+  Note over G: hold the $12.69 until outcome is proven
   Note over G: stop after 3 min
-  Note over G,C: new on-chain proof built for "never executed"
-  Note over G: proof refuses
+  G->>C: later recovery checks expiry and history
+  Note over G: chain_unproven; exact failing check not logged
 </div>
 
-<p>Believing the exchange would have recorded a transaction that <em>did</em> reach the chain as one that never did. Had it succeeded late, the same cash could have been spent twice. I later found it in the wallet's history: it landed in the same second the order was created, failed inside a DEX, and moved none of our money.</p>
+<p>A failed status without a transaction hash was not enough to release the reservation. If an order could still execute later, reusing its reserved cash would understate the exposure.</p>
+
+<p>A later wallet-history capture found a candidate transaction in the same second as the order. It landed in slot 457,481,187, failed inside a DEX, and changed neither the owner’s SOL nor USDC balance. The archived analysis attributed it to effect 25, but the published reduced records do not prove a match to the prepared payload or explain which recovery check returned <code>chain_unproven</code>. That linkage still needs verification before settlement. The last recorded recovery left the reservation held. <a href="https://github.com/vishaljha2121/Velocita/blob/main/RESULTS.md">Evidence and limits</a>.</p>
 
 <div style="border-left: 3px solid var(--foreground); padding: 0.75rem 1.25rem; margin: 2rem 0; background: rgba(0,0,0,0.03);">
     <div style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondary); margin-bottom: 0.25rem;">ADR 0027 · unknown is a state</div>
     <div>"We don't know" keeps the money reserved. Once a signature might exist, only the chain can close it.</div>
 </div>
 
-<h2 style="margin-top: 3rem">10. Pull the plug on the Pi</h2>
+<h2 style="margin-top: 3rem">10. Restarting voters and keeping quorum</h2>
 
 <div class="mermaid" style="display: flex; justify-content: center; margin-bottom: 2rem; background: transparent;">
 sequenceDiagram
   participant N1 as NUC1 (leader)
   participant N2 as NUC2
   participant P as Pi
-  Note over P: offline
+  Note over P: example: temporarily offline
   N1->>N2: new entries
   N2-->>N1: durable: 2 of 3, keep going
   Note over P: restarts, replays its own log
@@ -361,34 +376,36 @@ sequenceDiagram
 </div>
 
 <div style="margin: 2rem 0;">
-    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Stop to back in step, rolling upgrade on Oct 16</div>
+    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Graceful stop to rejoin · Oct 16 rolling upgrade · trading halted</div>
     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem;"><div style="width: 9rem; font-size: 0.85rem;">Raspberry Pi</div><div style="flex: 1; background: rgba(0,0,0,0.05); border-radius: 4px;"><div style="width: 100%; background: #22c55e; height: 22px; border-radius: 4px;"></div></div><div style="width: 4.5rem; font-size: 0.9rem; font-weight: 600;">7 s</div></div>
     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem;"><div style="width: 9rem; font-size: 0.85rem;">NUC2</div><div style="flex: 1; background: rgba(0,0,0,0.05); border-radius: 4px;"><div style="width: 57%; background: #22c55e; height: 22px; border-radius: 4px;"></div></div><div style="width: 4.5rem; font-size: 0.9rem; font-weight: 600;">4 s</div></div>
     <div style="display: flex; align-items: center; gap: 0.75rem;"><div style="width: 9rem; font-size: 0.85rem;">NUC1 (leader)</div><div style="flex: 1; background: rgba(0,0,0,0.05); border-radius: 4px;"><div style="width: 57%; background: #22c55e; height: 22px; border-radius: 4px;"></div></div><div style="width: 4.5rem; font-size: 0.9rem; font-weight: 600;">4 s</div></div>
 </div>
 
-<p>Earlier, during an upgrade, the Pi was down for minutes; the NUCs kept committing and the Pi caught up from its own log when it returned.</p>
+<p>The diagram shows the intended retained-log catch-up path. The measured 4–7 s times above came from graceful rolling restarts with trading halted and no entries committed while a voter was away. They are not power-cut or live-trading failover timings. During the earlier October 15 upgrade, the NUCs formed a quorum while the Pi took minutes to start, and all three later converged at index 17.</p>
+
+<p>A voter can catch up from entries the leader still retains. Once it falls behind the compacted prefix, recovery needs operator repair from an archive. Snapshot-install components exist, but the integrated online installer remains unimplemented.</p>
 
 <h2 style="margin-top: 3rem">11. Where the 95 cents went</h2>
 
 <div style="margin: 2rem 0;">
-    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Cost of one round trip, ~94 bp</div>
+    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Approximate average round-trip loss in this run, ~94 bp</div>
     <div style="display: flex; height: 34px; border-radius: 4px; overflow: hidden; font-size: 0.8rem; color: #fff; font-weight: 600;">
         <div style="width: 42.5%; background: #f59e0b; display: flex; align-items: center; justify-content: center;">fees 40 bp</div>
-        <div style="width: 55.3%; background: #ef4444; display: flex; align-items: center; justify-content: center;">exchange price 52 bp</div>
+        <div style="width: 55.3%; background: #ef4444; display: flex; align-items: center; justify-content: center;">other execution 52 bp</div>
         <div style="width: 2.2%; background: #64748b;"></div>
     </div>
-    <div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.5rem;">The market itself moved only −2 bp (grey) between buy and sell.</div>
+    <div style="font-size: 0.85rem; color: var(--secondary); margin-top: 0.5rem;">The Binance reference moved about −2 bp per round trip on average (grey). The remaining execution difference is measured against another venue; it is not a direct spread measurement.</div>
 </div>
 
-<p>The strategy was a test load with no edge, and replays had said so. The live run measured the cost: a one-second strategy here needs a ~1% move just to break even. The system worked; the economics never could.</p>
+<p>The strategy served as an execution test load. The replay windows had negative aggregate returns before costs, and this live run lost money. At the observed costs, a round trip needed roughly a 1% favorable move to break even. These samples did not demonstrate an edge; they also do not prove that every strategy on this venue must lose.</p>
 
 <h2 style="margin-top: 3rem">What I took away</h2>
 
 <ul>
     <li><strong>Measure first.</strong> Every fix above started as a number that looked wrong.</li>
-    <li><strong>Fixes create bugs.</strong> The 490× speedup quietly broke Raft; only a test of every crash point caught it.</li>
-    <li><strong>Refusing is a feature.</strong> The best thing it did with real money was say "I can't prove that".</li>
+    <li><strong>Recheck assumptions after an optimization.</strong> Moving WAL syncs off-thread required an explicit durable-quorum boundary, checked with targeted persistence tests.</li>
+    <li><strong>Keep uncertainty explicit.</strong> An unresolved order must remain reserved until the evidence supports settlement, even if that stops trading.</li>
 </ul>
 
 <p>
