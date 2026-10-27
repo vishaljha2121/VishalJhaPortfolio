@@ -11,7 +11,6 @@ export interface Project {
 export interface Experience {
     role: string
     company: string
-    companyLink?: string
     date: string
     location: string
     description: string[]
@@ -70,18 +69,18 @@ export const portfolio = {
 
     experience: [
         {
-            role: "Independent Systems Developer",
-            company: "Velocita (personal project)",
-            companyLink: "https://github.com/vishaljha2121/Velocita",
-            date: "Aug 2026 – Present",
-            location: "New York, USA",
+            role: "C++ Engineer Intern",
+            company: "True Markets",
+            date: "May 2026 – Aug 2026",
+            location: "New York, NY",
             description: [
-                "Built a deterministic C++20 trading kernel replicated with Raft over Aeron across two NUCs and a Raspberry Pi 5. The kernel owns integer accounting, risk limits and execution permissions.",
-                "Separated strategy, execution and signing into distinct processes, with durable journals and finalized Solana reconciliation to handle crashes and uncertain order outcomes.",
-                "Ran a $25 live execution test: 16 swaps settled, with every recorded settlement matching the wallet’s on-chain SOL and USDC changes. Median intent-to-commit latency was 126 ms across 25 intents.",
-                "Qualified releases on x86_64 and ARM64 with crash-recovery drills and mutation tests; built Grafana dashboards and alerts for decisions, fills, balances and service health."
+                "Built a matching-engine latency harness using RDTSCP, p50–p99.99 measurements and bootstrap A/B testing; identified cold-start artifacts that inflated reported per-operation cost.",
+                "Fixed an Aeron crash during network churn by tracing an unsynchronized handler registry and a single-producer queue receiving writes from multiple threads.",
+                "Deployed a C++ market-surveillance service as a read-only follower of two Raft clusters, with restart replay that avoids repeating historical actions; fixed a persistence bug that left recovered state empty.",
+                "Made customer-fund settlement restart-safe by preserving transfer idempotency keys across recovery, preventing duplicate transfers and retry storms during interrupted cycles.",
+                "Built Raft snapshot inspection and copy utilities, plus an exchange operations console for inspecting persisted cluster and order-book state."
             ],
-            tech: ["C++20", "Raft", "Aeron", "Python", "Linux", "Solana", "Prometheus", "Grafana"]
+            tech: ["C++", "Raft", "Aeron", "Concurrency", "Latency Measurement", "Recovery"]
         },
         {
             role: "Senior Analyst",
