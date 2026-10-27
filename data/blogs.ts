@@ -163,7 +163,51 @@ sequenceDiagram
     <div>A pinned fork adds a <code>durable_idx</code> hook: the leader's vote counts only up to what is really on disk. The build refuses to compile without the patch.</div>
 </div>
 
-<h2 style="margin-top: 3rem">4. Elections nobody asked for</h2>
+<h2 style="margin-top: 3rem">4. Memory that never grows</h2>
+
+<p>Nothing on the Raft path asks the OS for memory after start-up. Every object has a size fixed at compile time, and "full" is a typed refusal, never a slowdown or an out-of-memory kill.</p>
+
+<div style="margin: 2rem 0;">
+    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.6rem;">Size budgets, enforced by <code>static_assert</code>: green under 90%, amber 90–99%, dark exactly at budget (deliberate: one cache line, the swap account sized to fit)</div>
+    <div style="margin-bottom: 0.6rem;"><div style="display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem;"><span>whole replicated state</span><span style="font-weight: 600; white-space: nowrap;">78,512 / 81,920 B</span></div><div style="background: rgba(0,0,0,0.06); border-radius: 4px; margin-top: 0.2rem;"><div style="width: 95.8%; background: #f59e0b; height: 14px; border-radius: 4px;"></div></div></div><div style="margin-bottom: 0.6rem;"><div style="display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem;"><span>canonical snapshot</span><span style="font-weight: 600; white-space: nowrap;">61,586 / 65,536 B</span></div><div style="background: rgba(0,0,0,0.06); border-radius: 4px; margin-top: 0.2rem;"><div style="width: 94.0%; background: #f59e0b; height: 14px; border-radius: 4px;"></div></div></div><div style="margin-bottom: 0.6rem;"><div style="display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem;"><span>swap account</span><span style="font-weight: 600; white-space: nowrap;">4,160 / 4,160 B</span></div><div style="background: rgba(0,0,0,0.06); border-radius: 4px; margin-top: 0.2rem;"><div style="width: 100.0%; background: var(--foreground); height: 14px; border-radius: 4px;"></div></div></div><div style="margin-bottom: 0.6rem;"><div style="display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem;"><span>kernel result</span><span style="font-weight: 600; white-space: nowrap;">112 / 128 B</span></div><div style="background: rgba(0,0,0,0.06); border-radius: 4px; margin-top: 0.2rem;"><div style="width: 87.5%; background: #22c55e; height: 14px; border-radius: 4px;"></div></div></div><div style="margin-bottom: 0.6rem;"><div style="display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem;"><span>swap command</span><span style="font-weight: 600; white-space: nowrap;">296 / 512 B</span></div><div style="background: rgba(0,0,0,0.06); border-radius: 4px; margin-top: 0.2rem;"><div style="width: 57.8%; background: #22c55e; height: 14px; border-radius: 4px;"></div></div></div><div style="margin-bottom: 0.6rem;"><div style="display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem;"><span>hot record (one cache line)</span><span style="font-weight: 600; white-space: nowrap;">64 / 64 B</span></div><div style="background: rgba(0,0,0,0.06); border-radius: 4px; margin-top: 0.2rem;"><div style="width: 100.0%; background: var(--foreground); height: 14px; border-radius: 4px;"></div></div></div>
+</div>
+
+<pre style="background: #ffffff; color: var(--foreground); border: 1px solid var(--border); padding: 1.25rem 1.5rem; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 0.9rem; margin-bottom: 2rem">static_assert(std::is_trivially_copyable_v&lt;State&gt;);
+static_assert(sizeof(State)   &lt;= 4160);   // add a field, the build fails
+static_assert(sizeof(Command) &lt;= 512);</pre>
+
+<div style="margin: 2rem 0;">
+    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.6rem;">The memory atlas: where the 80 KiB state budget goes</div>
+    <div style="display: flex; height: 30px; border-radius: 4px; overflow: hidden;"><div title="request receipts: 40,960 B" style="width: 50.00%; background: #6366f1; "></div><div title="decision records: 10,368 B" style="width: 12.66%; background: #8b5cf6; "></div><div title="policies: 7,360 B" style="width: 8.98%; background: #0ea5e9; "></div><div title="source receipts: 7,168 B" style="width: 8.75%; background: #14b8a6; "></div><div title="policy bundles: 4,176 B" style="width: 5.10%; background: #22c55e; "></div><div title="swap account: 4,160 B" style="width: 5.08%; background: #f59e0b; "></div><div title="risk, orders, cursors: 4,320 B" style="width: 5.27%; background: #94a3b8; "></div><div title="free: 3,408 B" style="width: 4.16%; background: transparent; border: 1px dashed var(--border);"></div></div>
+    <div style="margin-top: 0.6rem; line-height: 1.8;"><span style="display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 1rem; font-size: 0.8rem; color: var(--secondary);"><span style="width: 10px; height: 10px; border-radius: 2px; background: #6366f1;  display: inline-block;"></span>request receipts 40.0 KiB</span><span style="display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 1rem; font-size: 0.8rem; color: var(--secondary);"><span style="width: 10px; height: 10px; border-radius: 2px; background: #8b5cf6;  display: inline-block;"></span>decision records 10.1 KiB</span><span style="display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 1rem; font-size: 0.8rem; color: var(--secondary);"><span style="width: 10px; height: 10px; border-radius: 2px; background: #0ea5e9;  display: inline-block;"></span>policies 7.2 KiB</span><span style="display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 1rem; font-size: 0.8rem; color: var(--secondary);"><span style="width: 10px; height: 10px; border-radius: 2px; background: #14b8a6;  display: inline-block;"></span>source receipts 7.0 KiB</span><span style="display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 1rem; font-size: 0.8rem; color: var(--secondary);"><span style="width: 10px; height: 10px; border-radius: 2px; background: #22c55e;  display: inline-block;"></span>policy bundles 4.1 KiB</span><span style="display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 1rem; font-size: 0.8rem; color: var(--secondary);"><span style="width: 10px; height: 10px; border-radius: 2px; background: #f59e0b;  display: inline-block;"></span>swap account 4.1 KiB</span><span style="display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 1rem; font-size: 0.8rem; color: var(--secondary);"><span style="width: 10px; height: 10px; border-radius: 2px; background: #94a3b8;  display: inline-block;"></span>risk, orders, cursors 4.2 KiB</span><span style="display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 1rem; font-size: 0.8rem; color: var(--secondary);"><span style="width: 10px; height: 10px; border-radius: 2px; background: transparent; border: 1px dashed var(--secondary); display: inline-block;"></span>free 3.3 KiB</span></div>
+</div>
+
+<p>Half the state is receipts: the stored answer to each recent command, so a retry gets the original answer instead of a second trade.</p>
+
+<table style="width: 100%; text-align: left; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem;">
+    <thead>
+        <tr style="border-bottom: 1px solid var(--border);"><th style="padding: 0.75rem 0;">Arena</th><th style="padding: 0.75rem 0;">Slots</th><th style="padding: 0.75rem 0; text-align: right;">Total</th><th style="padding: 0.75rem 0 0.75rem 1rem;">When full</th></tr>
+    </thead>
+    <tbody>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 0;">retained Raft log</td><td style="padding: 0.75rem 0;">8,192 × 2 KiB ring</td><td style="padding: 0.75rem 0; text-align: right;">16 MiB</td><td style="padding: 0.75rem 0 0.75rem 1rem; color: var(--secondary);">refuse until compaction (64 cells kept for "halt")</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 0;">WAL blocks</td><td style="padding: 0.75rem 0;">64 × 4 KiB</td><td style="padding: 0.75rem 0; text-align: right;">256 KiB</td><td style="padding: 0.75rem 0 0.75rem 1rem; color: var(--secondary);">backpressure</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 0;">result ledger</td><td style="padding: 0.75rem 0;">1,024 answers</td><td style="padding: 0.75rem 0; text-align: right;">–</td><td style="padding: 0.75rem 0 0.75rem 1rem; color: var(--secondary);">refuse new commands, never drop an answer</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 0;">state tables</td><td style="padding: 0.75rem 0;">fixed arrays + count</td><td style="padding: 0.75rem 0; text-align: right;">77 KiB</td><td style="padding: 0.75rem 0 0.75rem 1rem; color: var(--secondary);">typed "capacity exceeded"</td></tr>
+    </tbody>
+</table>
+
+<div style="margin: 2rem 0;">
+    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.6rem;">The 64 WAL blocks at one illustrative moment: the Raft thread fills, the writer thread syncs</div>
+    <div style="display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; max-width: 520px;"><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #22c55e;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #f59e0b;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #f59e0b;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #f59e0b;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #f59e0b;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #f59e0b;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: #6366f1;"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div><div style="aspect-ratio: 1; border-radius: 2px; background: rgba(0,0,0,0.08);"></div></div>
+    <div style="margin-top: 0.6rem; font-size: 0.8rem; color: var(--secondary);"><span style="color: #22c55e;">■</span> durable, reusable &nbsp; <span style="color: #f59e0b;">■</span> sealed, waiting for fsync &nbsp; <span style="color: #6366f1;">■</span> open, being filled &nbsp; ■ never used</div>
+</div>
+
+<div style="border-left: 3px solid var(--foreground); padding: 0.75rem 1.25rem; margin: 2rem 0; background: rgba(0,0,0,0.03);">
+    <div style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondary); margin-bottom: 0.25rem;">ADR 0022 · budgets are compile errors</div>
+    <div>The snapshot must fit one 64 KiB message. As a runtime check, growing a struct would surface in production as a snapshot that no longer fits; as a <code>static_assert</code>, the build fails on both CPUs and whoever adds the field decides what to give up.</div>
+</div>
+
+<h2 style="margin-top: 3rem">5. Elections nobody asked for</h2>
 
 <div style="margin: 2rem 0;">
     <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Compaction pause (election timeout is 1–2 s)</div>
@@ -181,7 +225,7 @@ sequenceDiagram
     </tbody>
 </table>
 
-<h2 style="margin-top: 3rem">5. The gateway that stopped itself, twice</h2>
+<h2 style="margin-top: 3rem">6. The gateway that stopped itself, twice</h2>
 
 <p>The gateway stops when anything looks off, because a stop might hide an order in flight. That paranoia surfaced two bugs:</p>
 
@@ -195,7 +239,7 @@ sequenceDiagram
     </tbody>
 </table>
 
-<h2 style="margin-top: 3rem">6. One process holds the key, and trusts no one</h2>
+<h2 style="margin-top: 3rem">7. One process holds the key, and trusts no one</h2>
 
 <p>The gateway talks to the internet, so it never sees the key. The signer re-checks everything itself before signing:</p>
 
@@ -212,7 +256,7 @@ flowchart LR
     <div>A simulation shows what a transaction would do <em>now</em>. Decoding proves what the signature <em>allows</em>: which accounts, how much at most, and the minimum that must arrive.</div>
 </div>
 
-<h2 style="margin-top: 3rem">7. 16 out of 16, to the atom</h2>
+<h2 style="margin-top: 3rem">8. 16 out of 16, to the atom</h2>
 
 <p>Every amount in Velocita is an integer count of an asset's smallest unit, called an <strong>atom</strong>:</p>
 
@@ -253,7 +297,7 @@ flowchart LR
     </tbody>
 </table>
 
-<h2 style="margin-top: 3rem">8. Effect 25: the exchange said "failed"</h2>
+<h2 style="margin-top: 3rem">9. Effect 25: the exchange said "failed"</h2>
 
 <div class="mermaid" style="display: flex; justify-content: center; margin-bottom: 2rem; background: transparent;">
 sequenceDiagram
@@ -277,7 +321,7 @@ sequenceDiagram
     <div>"We don't know" keeps the money reserved. Once a signature might exist, only the chain can close it.</div>
 </div>
 
-<h2 style="margin-top: 3rem">9. Pull the plug on the Pi</h2>
+<h2 style="margin-top: 3rem">10. Pull the plug on the Pi</h2>
 
 <div class="mermaid" style="display: flex; justify-content: center; margin-bottom: 2rem; background: transparent;">
 sequenceDiagram
@@ -301,7 +345,7 @@ sequenceDiagram
 
 <p>Earlier, during an upgrade, the Pi was down for minutes; the NUCs kept committing and the Pi caught up from its own log when it returned.</p>
 
-<h2 style="margin-top: 3rem">10. Where the 95 cents went</h2>
+<h2 style="margin-top: 3rem">11. Where the 95 cents went</h2>
 
 <div style="margin: 2rem 0;">
     <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem;">Cost of one round trip, ~94 bp</div>
