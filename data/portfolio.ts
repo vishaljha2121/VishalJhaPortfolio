@@ -107,6 +107,13 @@ export const portfolio = {
 
     projects: [
         {
+            title: "Velocita: Replicated Trading on Raft",
+            description: "A deterministic C++20 trading kernel replicated by Raft over Aeron across two NUCs and a Raspberry Pi 5, with a separate execution gateway and a key-holding signer. Traded real money on Solana unattended: 16 swaps, every settlement equal to the chain to the atom, 126 ms p50 replicated commits, and a voter back in step 4–7 s after a restart.",
+            tech: ["C++20", "Raft", "Aeron", "Distributed Systems", "Solana", "Python"],
+            github: "https://github.com/vishaljha2121/Velocita",
+            link: "https://github.com/vishaljha2121/Velocita"
+        },
+        {
             title: "High-Frequency Trading Engine",
             description: "Engineered a high-performance, low-latency trading engine in C++ featuring a price-time priority order matching algorithm and a custom FIX-like messaging protocol.",
             tech: ["C++", "Low-Latency Systems", "Quant"],
