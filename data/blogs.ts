@@ -251,6 +251,30 @@ flowchart LR
   D --> E["journal, then sign"]
 </div>
 
+<p>And here is how every secret travels, and who ends up holding what:</p>
+
+<div class="mermaid" style="display: flex; justify-content: center; margin-bottom: 2rem; background: transparent;">
+flowchart LR
+  KC["Mac Keychain<br/>(root of trust)"] -->|"SSH stdin, never a file<br/>or command line"| TF["each host: RAM-only tmpfs<br/>dir 0700, file 0600"]
+  TF -->|"read-only mount<br/>of one file"| P["voters, driver, gateway<br/>32-byte HMAC caller keys"]
+  VK["exchange API key<br/>(downloaded by me)"] -->|"owner-only install"| SG["signer, own Unix user<br/>network: 3 voters only"]
+  SG -->|"signs a 47-byte<br/>uuid.timestamp only"| GW["gateway gets a<br/>short-lived token"]
+  SG -->|"signs only the<br/>committed transaction"| TX["swap signature"]
+</div>
+
+<table style="width: 100%; text-align: left; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem;">
+    <thead>
+        <tr style="border-bottom: 1px solid var(--border);"><th style="padding: 0.75rem 0;">Process</th><th style="padding: 0.75rem 0;">Holds</th><th style="padding: 0.75rem 0;">Can't</th></tr>
+    </thead>
+    <tbody>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0;">strategy</td><td style="padding: 0.75rem 1rem 0.75rem 0;">its caller key</td><td style="padding: 0.75rem 0; color: var(--secondary);">authorize, sign, or report a fill</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0;">gateway</td><td style="padding: 0.75rem 1rem 0.75rem 0;">its caller key, a session token</td><td style="padding: 0.75rem 0; color: var(--secondary);">sign anything the cluster didn't commit</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem 1rem 0.75rem 0;">signer</td><td style="padding: 0.75rem 1rem 0.75rem 0;">the exchange key</td><td style="padding: 0.75rem 0; color: var(--secondary);">reach the internet, or sign arbitrary bytes</td></tr>
+    </tbody>
+</table>
+
+<p>Every message is tagged with a key derived per direction and per cluster, so a captured frame can't be replayed backwards or into another cluster. Secrets live only in RAM: a stolen SD card holds none.</p>
+
 <div style="border-left: 3px solid var(--foreground); padding: 0.75rem 1.25rem; margin: 2rem 0; background: rgba(0,0,0,0.03);">
     <div style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondary); margin-bottom: 0.25rem;">ADR 0019 · decode, don't simulate</div>
     <div>A simulation shows what a transaction would do <em>now</em>. Decoding proves what the signature <em>allows</em>: which accounts, how much at most, and the minimum that must arrive.</div>
