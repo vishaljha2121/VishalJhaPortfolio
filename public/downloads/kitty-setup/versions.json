@@ -1,0 +1,15 @@
+{
+  "kitty": "0.48.2",
+  "zsh": "5.9",
+  "macOS": "26.6.2",
+  "bat": "0.26.1",
+  "glow": "2.1.2",
+  "lsd": "1.2.0",
+  "yazi": "26.5.6",
+  "fzf": "0.74.2",
+  "zoxide": "0.10.0",
+  "delta": "0.19.2",
+  "fastfetch": "2.66.0",
+  "piper_revision": "9014ed2",
+  "font": "MesloLGS NF (four installed TTF faces)"
+}

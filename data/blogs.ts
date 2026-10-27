@@ -1,3 +1,5 @@
+import { kittySetupPost } from './kittyBlog'
+
 export interface BlogPost {
     slug: string;
     title: string;
@@ -9,6 +11,7 @@ export interface BlogPost {
 }
 
 export const blogPosts: BlogPost[] = [
+    kittySetupPost,
     {
         slug: 'velocita-replicated-trading-on-a-raspberry-pi',
         title: 'Velocita: Building a Replicated Trading System on Home Hardware',
