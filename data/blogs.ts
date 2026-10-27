@@ -165,7 +165,7 @@ sequenceDiagram
   L->>F1: entry 42 (leader's copy only in memory)
   F1-->>L: durable
   Note over L: majority, commit 42
-  Note over L: crash; unsafe integration restarts without 42
+  Note over L: crash, unsafe integration restarts without 42
   Note over F1: briefly unreachable
   L->>F2: elect a leader: neither has 42
   Note over L,F2: committed entry 42 is gone
@@ -348,7 +348,7 @@ sequenceDiagram
   Note over G: hold the $12.69 until outcome is proven
   Note over G: stop after 3 min
   G->>C: later recovery checks expiry and history
-  Note over G: chain_unproven; exact failing check not logged
+  Note over G: chain_unproven, exact failing check not logged
 </div>
 
 <p>A failed status without a transaction hash was not enough to release the reservation. If an order could still execute later, reusing its reserved cash would understate the exposure.</p>
