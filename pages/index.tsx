@@ -84,7 +84,7 @@ export default function Home() {
                     <ul className={styles.list}>
                         {portfolio.experience.map((exp, i) => (
                             <li key={i}>
-                                <strong>{exp.role}</strong> at <strong>{exp.company}</strong> ({exp.date})
+                                <strong>{exp.role}</strong> at {exp.companyLink ? <a href={exp.companyLink}><strong>{exp.company}</strong></a> : <strong>{exp.company}</strong>} ({exp.date})
                                 <ul style={{ listStyleType: 'disc', paddingLeft: '1.2rem', marginTop: '0.25rem', marginBottom: '0' }}>
                                     {exp.description.map((desc, j) => (
                                         <li key={j} className={styles.subtext} style={{ marginBottom: '0.25rem' }}>{desc}</li>

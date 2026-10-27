@@ -70,6 +70,20 @@ export const portfolio = {
 
     experience: [
         {
+            role: "Independent Systems Developer",
+            company: "Velocita (personal project)",
+            companyLink: "https://github.com/vishaljha2121/Velocita",
+            date: "Aug 2026 – Present",
+            location: "New York, USA",
+            description: [
+                "Built a deterministic C++20 trading kernel replicated with Raft over Aeron across two NUCs and a Raspberry Pi 5. The kernel owns integer accounting, risk limits and execution permissions.",
+                "Separated strategy, execution and signing into distinct processes, with durable journals and finalized Solana reconciliation to handle crashes and uncertain order outcomes.",
+                "Ran a $25 live execution test: 16 swaps settled, with every recorded settlement matching the wallet’s on-chain SOL and USDC changes. Median intent-to-commit latency was 126 ms across 25 intents.",
+                "Qualified releases on x86_64 and ARM64 with crash-recovery drills and mutation tests; built Grafana dashboards and alerts for decisions, fills, balances and service health."
+            ],
+            tech: ["C++20", "Raft", "Aeron", "Python", "Linux", "Solana", "Prometheus", "Grafana"]
+        },
+        {
             role: "Senior Analyst",
             company: "Standard Chartered GBS",
             date: "May 2025 – Jul 2025",

@@ -24,7 +24,7 @@ export default function Experience() {
                         {portfolio.experience.map((exp, i) => (
                             <li key={i}>
                                 <div style={{ marginBottom: '0.25rem' }}>
-                                    <strong>{exp.role}</strong>, <strong>{exp.company}</strong> ({exp.date})
+                                    <strong>{exp.role}</strong>, {exp.companyLink ? <a href={exp.companyLink}><strong>{exp.company}</strong></a> : <strong>{exp.company}</strong>} ({exp.date})
                                 </div>
                                 <ul style={{ listStyleType: 'disc', paddingLeft: '2rem', marginTop: '0.5rem' }}>
                                     {exp.description.map((desc, j) => (
