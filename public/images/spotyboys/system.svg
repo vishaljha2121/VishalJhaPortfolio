@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="650" viewBox="0 0 1040 650" role="img" aria-labelledby="title desc">
+<title id="title">SpotyBoys: serving and learning</title><desc id="desc">The browser uses nginx to reach Navidrome and the recommendation API. PostgreSQL holds playback events, Redis runtime state. A delta worker exports data for Airflow-triggered GPU retraining. Versioned bundles return to the API through a promotion check.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#60746b"/></marker></defs>
+<rect width="1040" height="650" rx="18" fill="#f0f4f0"/>
+<g font-family="system-ui, sans-serif" fill="#243b31">
+<text x="35" y="43" font-size="24" font-weight="700">SpotyBoys</text><text x="35" y="70" font-size="15">A music service with a feedback loop</text>
+<rect x="25" y="95" width="635" height="445" rx="14" fill="#fff" stroke="#b6c9be"/>
+<text x="45" y="126" font-size="16" font-weight="700">SERVING</text>
+<rect x="700" y="95" width="315" height="445" rx="14" fill="#fff" stroke="#b6c9be"/>
+<text x="720" y="126" font-size="16" font-weight="700">TRAINING &amp; ARTIFACTS</text>
+<g stroke="#60746b" stroke-width="2" fill="none" marker-end="url(#arrow)">
+<path d="M175 184H240"/><path d="M350 184H420"/><path d="M295 210V262"/><path d="M295 338V385"/><path d="M395 300H510V385"/><path d="M395 430H545V492H720V430"/><path d="M857 395V339"/><path d="M857 260V210"/><path d="M720 180H680V360H425V320H396"/>
+</g>
+<g fill="#e7f0e9" stroke="#94b29e">
+<rect x="45" y="155" width="130" height="58" rx="8"/><rect x="240" y="155" width="110" height="58" rx="8"/>
+<rect x="420" y="155" width="210" height="58" rx="8"/>
+<rect x="195" y="265" width="200" height="75" rx="8"/>
+<rect x="195" y="388" width="200" height="75" rx="8"/><rect x="465" y="388" width="130" height="75" rx="8"/>
+<rect x="720" y="155" width="275" height="58" rx="8"/>
+<rect x="720" y="263" width="275" height="75" rx="8"/>
+<rect x="720" y="398" width="275" height="65" rx="8"/>
+</g>
+<g text-anchor="middle" font-size="17" font-weight="600">
+<text x="110" y="190">Browser</text><text x="295" y="190">nginx</text><text x="525" y="180">Navidrome</text>
+<text x="295" y="293">Recommendation API</text><text x="295" y="419">PostgreSQL</text><text x="530" y="419">Redis</text>
+<text x="857" y="180">Versioned model bundle</text><text x="857" y="292">GPU training</text><text x="857" y="426">Object storage</text>
+</g>
+<g text-anchor="middle" font-size="14">
+<text x="525" y="201">Player + patched UI</text><text x="295" y="318">Retrieve → rank → filter</text>
+<text x="295" y="443">Playback + telemetry</text><text x="530" y="443">Runtime state</text>
+<text x="857" y="201">Promotion / activation checks</text><text x="857" y="317">GRU + retrieval artifacts</text><text x="857" y="448">Parquet deltas + artifacts</text>
+<text x="857" y="370">Airflow triggers · MLflow tracks</text>
+<text x="607" y="519">Delta export worker</text>
+</g>
+<rect x="25" y="565" width="990" height="58" rx="9" fill="#dce8df"/>
+<text x="45" y="590" font-size="16" font-weight="600">Observe serving separately from model quality</text>
+<text x="45" y="612" font-size="14">PostgreSQL telemetry → windowed rollups → Grafana · Fallback state and model version travel with the response</text>
+</g></svg>

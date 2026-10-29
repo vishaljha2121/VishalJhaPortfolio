@@ -127,6 +127,13 @@ export const portfolio = {
             link: "https://github.com/vishaljha2121/Velocita"
         },
         {
+            title: "SpotyBoys: Music Recommendation System",
+            description: "Built with Dawei Sun and Yonghyeon Shin for our spring 2026 ML systems course at NYU. A session-based music recommender with GRU ranking, Navidrome playback and a retraining pipeline. My work included serving integration, fallback behaviour, PostgreSQL/Grafana monitoring, model-promotion checks and load testing.",
+            tech: ["Python", "PyTorch", "FastAPI", "PostgreSQL", "Docker", "MLOps"],
+            github: "https://github.com/Bobosi-coder/SpotyBoys",
+            link: "https://vishaljha2121.github.io/VishalJhaPortfolio/blog/spotyboys-from-recommendations-to-a-music-service/"
+        },
+        {
             title: "High-Frequency Trading Engine",
             description: "Engineered a high-performance, low-latency trading engine in C++ featuring a price-time priority order matching algorithm and a custom FIX-like messaging protocol.",
             tech: ["C++", "Low-Latency Systems", "Quant"],

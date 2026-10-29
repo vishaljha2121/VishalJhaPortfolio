@@ -1,3 +1,4 @@
+import { spotyBoysPost } from './spotyBoysBlog'
 import { kittySetupPost } from './kittyBlog'
 
 export interface BlogPost {
@@ -11,6 +12,7 @@ export interface BlogPost {
 }
 
 export const blogPosts: BlogPost[] = [
+    spotyBoysPost,
     kittySetupPost,
     {
         slug: 'velocita-replicated-trading-on-a-raspberry-pi',
