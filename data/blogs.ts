@@ -1,5 +1,6 @@
 import { spotyBoysPost } from './spotyBoysBlog'
 import { kittySetupPost } from './kittyBlog'
+import { velocitaTapePost } from './velocitaTapeBlog'
 
 export interface BlogPost {
     slug: string;
@@ -12,6 +13,7 @@ export interface BlogPost {
 }
 
 export const blogPosts: BlogPost[] = [
+    velocitaTapePost,
     spotyBoysPost,
     kittySetupPost,
     {

@@ -127,6 +127,13 @@ export const portfolio = {
             link: "https://github.com/vishaljha2121/Velocita"
         },
         {
+            title: "Velocita Tape: A Verifiable Market-Data Recording",
+            description: "Built on Velocita: three home machines record True Markets' public order-book feed, order every frame through Raft, rebuild all twelve books identically and sign the log into an RFC 9162 Merkle tree with Ed25519 heads that anyone can verify offline. 564,319 updates compared over 21 hours with none divergent, a browser proof page, and a conformance kit that grades any order-book client against the tape.",
+            tech: ["C++20", "Raft", "Aeron", "Merkle Trees", "Ed25519", "Python"],
+            github: "https://github.com/vishaljha2121/Velocita/tree/orderbook/baseline",
+            link: "https://vishaljha2121.github.io/VishalJhaPortfolio/blog/velocita-tape-a-verifiable-recording-of-a-market-data-feed/"
+        },
+        {
             title: "SpotyBoys: Music Recommendation System",
             description: "Built with Dawei Sun and Yonghyeon Shin for our spring 2026 ML systems course at NYU. A session-based music recommender with GRU ranking, Navidrome playback and a retraining pipeline. My work included serving integration, fallback behaviour, PostgreSQL/Grafana monitoring, model-promotion checks and load testing.",
             tech: ["Python", "PyTorch", "FastAPI", "PostgreSQL", "Docker", "MLOps"],
